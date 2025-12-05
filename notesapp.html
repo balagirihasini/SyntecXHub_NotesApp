@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #4c8bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            background: #f0f3ff;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .actions button {
+            margin-left: 6px;
+            padding: 5px 10px;
+        }
+
+        .edit-btn {
+            background: orange;
+        }
+
+        .delete-btn {
+            background: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Notes App</h2>
+
+        <div class="input-section">
+            <input id="noteInput" placeholder="Type a note..." />
+            <button onclick="addOrUpdateNote()">Add</button>
+        </div>
+
+        <ul id="notesList"></ul>
+    </div>
+
+    <script>
+        let notes = JSON.parse(localStorage.getItem("notes")) || [];
+        let editIndex = null;
+
+        const input = document.getElementById("noteInput");
+        const list = document.getElementById("notesList");
+
+        function displayNotes() {
+            list.innerHTML = "";
+            notes.forEach((note, index) => {
+                list.innerHTML += `
+                <li>
+                    ${note}
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editNote(${index})">Edit</button>
+                        <button class="delete-btn" onclick="deleteNote(${index})">Delete</button>
+                    </div>
+                </li>`;
+            });
+        }
+
+        function addOrUpdateNote() {
+            const value = input.value.trim();
+            if (!value) return;
+
+            if (editIndex !== null) {
+                notes[editIndex] = value;
+                editIndex = null;
+            } else {
+                notes.push(value);
+            }
+
+            input.value = "";
+            saveNotes();
+            displayNotes();
+            input.focus();
+        }
+
+        function editNote(index) {
+            input.value = notes[index];
+            editIndex = index;
+            input.focus();
+        }
+
+        function deleteNote(index) {
+            notes.splice(index, 1);
+            saveNotes();
+            displayNotes();
+        }
+
+        function saveNotes() {
+            localStorage.setItem("notes", JSON.stringify(notes));
+        }
+
+        displayNotes();
+    </script>
+</body>
+</html>
